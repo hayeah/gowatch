@@ -27,6 +27,14 @@ create .sublaa1.tmp
 chmod .sublaa1.tmp
 ```
 
+# Example
+
+To execute a command everytime a file is added, you could:
+
+```bash
+gowatch dir | grep -P '^create' | cut -d' ' -f2- | while read line; do echo process $line; done
+```
+
 # File System Events Supported
 
 See: [fsnotify.Op](https://godoc.org/gopkg.in/fsnotify.v1#Op)
