@@ -1,11 +1,16 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"gopkg.in/fsnotify.v1"
 	"log"
 	"os"
 )
+
+type OutputEvent struct {
+	Event string `json:"event"`
+	Path  string `json:"path"`
+}
 
 func main() {
 	var err error
@@ -28,12 +33,23 @@ func main() {
 		}
 	}
 
+	output := os.Stdout
+
 	// stream fsnotify events
+	var outputEvent OutputEvent
 	for {
 		event := <-watcher.Events
-		tag := opName(event.Op)
 
-		fmt.Printf("%v %s\n", tag, event.Name)
+		outputEvent.Event = opName(event.Op)
+		outputEvent.Path = event.Name
+
+		encoder := json.NewEncoder(output)
+		err = encoder.Encode(outputEvent)
+		if err != nil {
+			log.Println(err)
+		}
+
+		// fmt.Printf("%v %s\n", tag, event.Name)
 	}
 }
 
